@@ -17,7 +17,7 @@ import com.ingenico.epayment.transfer.model.Account;
 import com.ingenico.epayment.transfer.service.IAccountService;
 
 @RestController
-@RequestMapping("account/api")
+@RequestMapping("account")
 public class AccountController {
 	
 	@Autowired

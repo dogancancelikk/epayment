@@ -1,13 +1,16 @@
 package com.ingenico.epayment.transfer.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
+import com.ingenico.epayment.transfer.DTO.TransferAccountDTO;
+import com.ingenico.epayment.transfer.DTO.TransferDTO;
 import com.ingenico.epayment.transfer.model.Transfer;
 
 public interface ITransferService {
 	
-	public void createTransfer(Long senderID, Long receiverId, BigDecimal amount);
+	ResponseEntity<TransferAccountDTO> createTransfer(TransferDTO transferDTO);
 	
 	public List<Transfer> getTransfers();
 	
