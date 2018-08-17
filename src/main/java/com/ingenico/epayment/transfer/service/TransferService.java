@@ -31,16 +31,22 @@ public class TransferService implements ITransferService{
 		
 			Optional<Account> senderAccount = accountRepository.findById(senderID);
 			Optional<Account> receiverAccount = accountRepository.findById(receiverId);
-			if(senderAccount.get().getBalance().compareTo(amount)==0 || senderAccount.get().getBalance().compareTo(amount)==1 ){
-				try {
-				transferRepository.save(transfer);
-				senderAccount.get().setBalance(senderAccount.get().getBalance()-);
-				} catch (Exception e) {
-					// TODO: handle exception
+			if (senderAccount.isPresent() && receiverAccount.isPresent()){
+				if(senderAccount.get().getBalance().compareTo(amount)==0 || senderAccount.get().getBalance().compareTo(amount)==1 ){
+					try {
+					transferRepository.save(transfer);
+					BigDecimal senderAccountNewBalance= senderAccount.get().getBalance().subtract(amount);
+					BigDecimal receiverAccountNewBalance= receiverAccount.get().getBalance().add(amount);
+					senderAccount.get().setBalance(senderAccountNewBalance);
+					receiverAccount.get().setBalance(receiverAccountNewBalance);
+					} catch (Exception e) {
+						System.out.println("Transfer has not completed.");
+					}
 				}
+			}else{
+				System.out.println("Account doesn't exist.");
 			}
-		
-		
+			
 	}
 
 	@Override
@@ -52,6 +58,8 @@ public class TransferService implements ITransferService{
 
 	@Override
 	public List<Transfer> getBySenderId(Long id) {
+		Optional<Transfer> transfers = transferRepository.findById(id);
+		transfers.ifPresent(transfer->System.out.println(transfer.getAmount()));
 		
 		return null;
 	}
@@ -61,5 +69,6 @@ public class TransferService implements ITransferService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
 }

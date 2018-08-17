@@ -11,4 +11,8 @@ import com.ingenico.epayment.transfer.model.Account;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 	
 	public Optional<Account> findById(Long id);
+
+	public Optional<Account> findByName(String name);
+	
+	
 }
