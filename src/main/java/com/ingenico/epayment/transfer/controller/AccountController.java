@@ -1,54 +1,52 @@
 package com.ingenico.epayment.transfer.controller;
 
-import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ingenico.epayment.transfer.DTO.CreateAccountDTO;
+import com.ingenico.epayment.transfer.DTO.AccountDTO;
 import com.ingenico.epayment.transfer.model.Account;
 import com.ingenico.epayment.transfer.service.IAccountService;
 
 @RestController
+@RequestMapping("account/api")
 public class AccountController {
 	
 	@Autowired
 	IAccountService accountService;
 	
-	@RequestMapping(value = "/account/get", method = RequestMethod.POST)
-	public Optional<Account> getAccountById(@RequestBody(required = true) Long id){
-		
-		Optional<Account> account = accountService.getAccountInformation(id);
-		
-		return account;
-	}
+		@GetMapping("/getbyid/{id}")
+		public ResponseEntity<Account> getAccountById(@PathVariable("id") Long id){
+			
+			return accountService.getOneAccountInformation(id);
+			
+		}
 	
-//		@RequestMapping(value = "/account/create", method = RequestMethod.POST,
-//				produces = MediaType.APPLICATION_JSON_VALUE,consumes=MediaType.APPLICATION_JSON_VALUE)
-		@PostMapping("/account/create")
-	    public String createAccount(@RequestBody(required = true) CreateAccountDTO account){
-			System.out.println("Blabla");
-			accountService.createAccount(account.getName(), account.getBalance());
-			
-			return null;
-
+		@PostMapping("/create")
+	    public ResponseEntity<Account> createAccount(@RequestBody(required = true) Account account){
+			return accountService.createAccount(account);
 	    }
+		@PostMapping("/create/multiple")
+		 public ResponseEntity<List<Account>> createMultipleAccount(@RequestBody(required = true) Collection<Account> accounts){
+				return accountService.createMultipleAccounts(accounts);
+		    }
 		
-		@GetMapping("/account/get/{name}")
+		@GetMapping("/getbyname/{name}")
 		public ResponseEntity<Account> getAccountByName(@PathVariable("name") String name){
-			Optional<Account> account = accountService.getAccountInformationByName(name);
-			
-			return new ResponseEntity<>(account.get(),HttpStatus.OK);
+			return accountService.getAccountInformationByName(name);
+		}
+		
+		@GetMapping("/get/all")
+		public ResponseEntity<List<AccountDTO>> getAllAccounts() throws Throwable{
+			return accountService.getAllAccountsResponse();
 		}
 		
 		
