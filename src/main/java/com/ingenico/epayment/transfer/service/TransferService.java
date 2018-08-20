@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.ingenico.epayment.transfer.DTO.TransferAccountDTO;
 import com.ingenico.epayment.transfer.DTO.TransferDTO;
 import com.ingenico.epayment.transfer.exception.AccountNotFoundException;
-import com.ingenico.epayment.transfer.exception.BalanceNotSufficientException;
+import com.ingenico.epayment.transfer.exception.InsufficientBalanceException;
 import com.ingenico.epayment.transfer.exception.UnknownTransferException;
 import com.ingenico.epayment.transfer.exception.UnknownUpdateAccountBalanceException;
 import com.ingenico.epayment.transfer.model.Account;
@@ -31,7 +31,19 @@ public class TransferService implements ITransferService {
 
 	@Autowired
 	AccountRepository accountRepository;
-
+	
+	
+	/**
+	 * CreateTransfer method is intended for transferring money from one account to another.
+	 * Initially the transfer request is checked whether it is valid or not by validateTransferRequest method. 
+	 * If account doesn't exist or doesn't have sufficient balance,it throws AccountNotFoundException or InsufficientBalanceException.
+	 * If the request is valid, the method will start transfer operations.
+	 * 
+	 * The method was developed with consideration of concurrent requests.For this purpose, Optimistic Locking was used.
+	 * While using it, each transaction that reads data holds the value of the version property.Before the transaction wants to make an update, it checks the version property again.
+	 * If there is problem because of concurrent request , the method throws ObjectOptimisticLockingFailureException.
+	 * 
+	 */
 	@Override
 	public ResponseEntity<TransferAccountDTO> createTransfer(TransferDTO transferRequest) {
 		if (validateTransferRequest(transferRequest)) {
@@ -41,35 +53,39 @@ public class TransferService implements ITransferService {
 			Transfer transfer = new Transfer(transferRequest.getReceiverID(), transferRequest.getSenderID(),
 					transferRequest.getAmount(), transactionTime);
 			try {
-				transferRepository.saveAndFlush(transfer);
+				
 				BigDecimal senderAccountNewBalance = senderAccount.get().getBalance()
 						.subtract(transferRequest.getAmount());
 				BigDecimal receiverAccountNewBalance = receiverAccount.get().getBalance()
 						.add(transferRequest.getAmount());
 				senderAccount.get().setBalance(senderAccountNewBalance);
 				receiverAccount.get().setBalance(receiverAccountNewBalance);
-				try {
-					accountRepository.saveAndFlush(senderAccount.get());
-					accountRepository.saveAndFlush(receiverAccount.get());
+					try {
+						accountRepository.save(senderAccount.get());
+					} catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException) {
+						throw optimisticLockingFailureException;
+					}
+					
+					try {
+						accountRepository.save(receiverAccount.get());
+					} catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException) {
+						accountRepository.delete(receiverAccount.get());
+						throw optimisticLockingFailureException;
+					}
+					transferRepository.save(transfer);
 					TransferAccountDTO transferAccountDTO = new TransferAccountDTO(senderAccount.get().getName(),
 							receiverAccount.get().getName(), transferRequest.getAmount());
 					return new ResponseEntity<TransferAccountDTO>(transferAccountDTO, HttpStatus.CREATED);
-				} catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException) {
-					transferRepository.delete(transfer);
-					createTransfer(transferRequest);
-					throw optimisticLockingFailureException;
-				} catch (UnknownUpdateAccountBalanceException exception) {
+				} catch (UnknownTransferException exception) {
 					throw exception;
 				}
-			} catch (Exception e) {
-				System.out.println("Transfer has not completed.");
-				throw new UnknownTransferException();
-			}
-		} else {
-			throw new UnknownTransferException();
-		}
+		} 
+		return null;
 	}
-
+	
+	/**
+	 * This method fetchs all transfers from database
+	 */
 	@Override
 	public ResponseEntity<List<Transfer>> getAllTransfers() {
 		// TODO Auto-generated method stub
@@ -80,36 +96,40 @@ public class TransferService implements ITransferService {
 			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.NOT_FOUND);
 		}
 	}
-
+	
+	/**
+	 * This method provides information of sent transfers for one user
+	 */
 	@Override
 	public ResponseEntity<List<Transfer>> getBySenderId(Long id) {
 		Account account = accountRepository.findById(id).get();
 		if (account != null) {
-			Optional<Transfer> transfers = transferRepository.findBySenderAccountId(id);
-			// transfers.ifPresent(transfer ->
-			// System.out.println(transfer.getAmount()));
-			List<Transfer> transferList = new ArrayList<>();
-
-			transfers.ifPresent(transfer -> transferList.add(transfer));
-			return new ResponseEntity<List<Transfer>>(transferList, HttpStatus.OK);
+			List<Transfer> transfers = transferRepository.findBySenderAccountId(id);
+			
+			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.OK);
 		} else {
 			throw new AccountNotFoundException();
 		}
 	}
-
+	/**
+	 * This method provides information of received transfers for one user
+	 */
 	@Override
 	public ResponseEntity<List<Transfer>> getByReceiverId(Long id) {
 		Account account = accountRepository.findById(id).get();
 		if (account != null) {
-			Optional<Transfer> transfers = transferRepository.findByReceiverAccountId(id);
-			List<Transfer> transferList = new ArrayList<>();
-			transfers.ifPresent(transfer -> transferList.add(transfer));
-			return new ResponseEntity<List<Transfer>>(transferList, HttpStatus.OK);
+			List<Transfer> transfers = transferRepository.findByReceiverAccountId(id);
+			
+			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.OK);
 		} else {
 			throw new AccountNotFoundException();
 		}
 	}
-
+	/**
+	 * ValidateTransferRequest Method takes information of transfer and checks information of transfer.
+	 * @param transferDTO
+	 * @return
+	 */
 	private boolean validateTransferRequest(TransferDTO transferDTO) {
 		Optional<Account> senderAccount = accountRepository.findById(transferDTO.getSenderID());
 		Optional<Account> receiverAccount = accountRepository.findById(transferDTO.getReceiverID());
@@ -118,7 +138,7 @@ public class TransferService implements ITransferService {
 					|| senderAccount.get().getBalance().compareTo(transferDTO.getAmount()) == 1) {
 				return true;
 			} else {
-				throw new BalanceNotSufficientException();
+				throw new InsufficientBalanceException();
 			}
 		} else {
 			throw new AccountNotFoundException();

@@ -1,6 +1,6 @@
 package com.ingenico.epayment.transfer.repository;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,8 +13,8 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
 	
 	Optional<Transfer> findById(Long id);
 	
-	Optional<Transfer> findBySenderAccountId(Long id);
+	List<Transfer> findBySenderAccountId(Long id);
 	
-	Optional<Transfer> findByReceiverAccountId(Long id);
+	List<Transfer> findByReceiverAccountId(Long id);
 	
 }

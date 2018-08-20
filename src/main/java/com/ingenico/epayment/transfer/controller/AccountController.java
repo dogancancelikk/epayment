@@ -47,7 +47,7 @@ public class AccountController {
 	@GetMapping("/getbyid/{id}")
 	public ResponseEntity<Account> getAccountById(@PathVariable("id") Long id) {
 
-		return accountService.getOneAccountInformation(id);
+		return accountService.getOneAccountInformationById(id);
 
 	}
 

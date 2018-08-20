@@ -14,7 +14,7 @@ public interface IAccountService {
 	
 	public ResponseEntity<Account> createAccount(Account account);
 	
-	ResponseEntity<Account> getOneAccountInformation(Long id);
+	ResponseEntity<Account> getOneAccountInformationById(Long id);
 
 	ResponseEntity<Account> getAccountInformationByName(String name);
 	

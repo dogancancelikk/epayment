@@ -88,7 +88,7 @@ public class ListAccountsTest {
     }
     
     @Test
-    public void handleNotFound() {
+    public void accountNotFound() {
         String resourceUrl = "/account/getbyid/5555";
         ResponseEntity<Account> responseEntity = restTemplate.exchange(resourceUrl, 
         		HttpMethod.GET, testHelper.getRequestHeaders(), Account.class);

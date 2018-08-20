@@ -58,7 +58,7 @@ public class CreateAccountTest {
 		JSONObject postBody = testHelper.constructAccount(name, balance);
 		ResponseEntity<Account> responseEntity = testRestTemplate.exchange(resourceUrl, HttpMethod.POST,
 				testHelper.getPostRequestHeaders(postBody.toString()), Account.class);
-		assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+		assertEquals(201, responseEntity.getStatusCodeValue());
 		assertEquals(MediaType.APPLICATION_JSON_UTF8, responseEntity.getHeaders().getContentType());
 
 		createdAccount = responseEntity.getBody();
@@ -75,15 +75,15 @@ public class CreateAccountTest {
 		ResponseEntity<Account> responseEntity = testRestTemplate.exchange(resourceUrl, HttpMethod.POST,
 				testHelper.getPostRequestHeaders(postObject.toString()), Account.class);
 
-		assertEquals(422, responseEntity.getStatusCode());
+		assertEquals(422, responseEntity.getStatusCodeValue());
 		assertEquals(MediaType.APPLICATION_JSON_UTF8, responseEntity.getHeaders().getContentType());
 	}
 
 	@Test
 	public void createNewAccountWithBlankName() {
-		String resourceUrl = "/contact/create";
+		String resourceUrl = "/account/create";
 		String name = "";
-		BigDecimal balance = new BigDecimal(152);
+		BigDecimal balance = new BigDecimal("152");
 
 		JSONObject postBody = testHelper.constructAccount(name, balance);
 

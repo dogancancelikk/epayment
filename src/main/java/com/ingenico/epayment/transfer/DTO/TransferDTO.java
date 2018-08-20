@@ -8,6 +8,15 @@ public class TransferDTO {
 	private Long receiverID;
 	private BigDecimal amount;
 	
+	public TransferDTO(){
+		
+	}
+	public TransferDTO(Long senderID,Long receiverID,BigDecimal amount){
+		this.senderID = senderID;
+		this.receiverID = receiverID;
+		this.amount = amount;
+	}
+	
 	
 	public Long getSenderID() {
 		return senderID;
