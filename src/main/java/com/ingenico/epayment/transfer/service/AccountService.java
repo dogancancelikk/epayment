@@ -38,7 +38,7 @@ public class AccountService implements IAccountService {
 			logger.info("Account is created succesfully.Account name is "+account.getName()+" and has "+account.getBalance()+"£ balance");
 			return new ResponseEntity<Account>(newAccount, HttpStatus.CREATED);
 		} else {
-			logger.error("Account missing information");
+			logger.error("Missing name information on request.");
 			throw new AccountMissingInformationException();
 		}
 
@@ -54,10 +54,10 @@ public class AccountService implements IAccountService {
 		for(Account account :accounts){
 			if (account.getName() != null && account.getName().length()>0) {
 				Account newAccount = accountRepository.save(account);
-				logger.info("Account is created succesfully.Account name is "+newAccount.getName()+" and has "+newAccount.getBalance()+"£ balance");
+				logger.info("Account is created succesfully. Account name is "+newAccount.getName()+" and it has "+newAccount.getBalance()+"£ balance");
 				accountList.add(newAccount);
 			}else{
-				logger.warn("Some accounts missing some information.");
+				logger.warn("Missing name information on request.");
 			}
 		}
 		return new ResponseEntity<List<Account>>(accountList, HttpStatus.CREATED);
@@ -73,7 +73,7 @@ public class AccountService implements IAccountService {
 		if(!allAccounts.isEmpty()){
 			return new ResponseEntity<List<Account>>(allAccounts, HttpStatus.OK);	
 		}else{
-			logger.info("There is no account in database.");
+			logger.info("There is no account.");
 			return new ResponseEntity<List<Account>>(allAccounts, HttpStatus.NOT_FOUND);
 		}
 		
@@ -118,7 +118,7 @@ public class AccountService implements IAccountService {
 		if (existingAccount.isPresent()) {
 			return existingAccount;
 		} else {
-			logger.warn("There is no account with account name"+name);
+			logger.warn("There is no account with account name "+name);
 			throw new AccountNotFoundException();
 		}
 	}
