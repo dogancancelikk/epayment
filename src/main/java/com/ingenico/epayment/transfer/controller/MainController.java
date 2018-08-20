@@ -11,7 +11,7 @@ public class MainController {
 	
 	 @RequestMapping(value = "/", method = RequestMethod.GET)
 	    public ResponseEntity rootResponse() {
-	        String welcomeMessage = "Welcome to the spring boot integration test sample api";
+	        String welcomeMessage = "Welcome to the Simple EPayment Solution";
 	        return new ResponseEntity<String>(welcomeMessage, HttpStatus.OK);
 	    }
 

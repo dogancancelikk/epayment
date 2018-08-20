@@ -2,12 +2,14 @@ package com.ingenico.epayment.transfer.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 import com.ingenico.epayment.transfer.DTO.TransferAccountDTO;
@@ -51,10 +53,13 @@ public class TransferService implements ITransferService {
 					accountRepository.saveAndFlush(receiverAccount.get());
 					TransferAccountDTO transferAccountDTO = new TransferAccountDTO(senderAccount.get().getName(),
 							receiverAccount.get().getName(), transferRequest.getAmount());
-					return new ResponseEntity<TransferAccountDTO>(transferAccountDTO, HttpStatus.OK);
-				} catch (Exception e) {
+					return new ResponseEntity<TransferAccountDTO>(transferAccountDTO, HttpStatus.CREATED);
+				} catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException) {
 					transferRepository.delete(transfer);
-					throw new UnknownUpdateAccountBalanceException();
+					createTransfer(transferRequest);
+					throw optimisticLockingFailureException;
+				} catch (UnknownUpdateAccountBalanceException exception) {
+					throw exception;
 				}
 			} catch (Exception e) {
 				System.out.println("Transfer has not completed.");
@@ -62,6 +67,46 @@ public class TransferService implements ITransferService {
 			}
 		} else {
 			throw new UnknownTransferException();
+		}
+	}
+
+	@Override
+	public ResponseEntity<List<Transfer>> getAllTransfers() {
+		// TODO Auto-generated method stub
+		List<Transfer> transfers = transferRepository.findAll();
+		if (!transfers.isEmpty()) {
+			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@Override
+	public ResponseEntity<List<Transfer>> getBySenderId(Long id) {
+		Account account = accountRepository.findById(id).get();
+		if (account != null) {
+			Optional<Transfer> transfers = transferRepository.findBySenderAccountId(id);
+			// transfers.ifPresent(transfer ->
+			// System.out.println(transfer.getAmount()));
+			List<Transfer> transferList = new ArrayList<>();
+
+			transfers.ifPresent(transfer -> transferList.add(transfer));
+			return new ResponseEntity<List<Transfer>>(transferList, HttpStatus.OK);
+		} else {
+			throw new AccountNotFoundException();
+		}
+	}
+
+	@Override
+	public ResponseEntity<List<Transfer>> getByReceiverId(Long id) {
+		Account account = accountRepository.findById(id).get();
+		if (account != null) {
+			Optional<Transfer> transfers = transferRepository.findByReceiverAccountId(id);
+			List<Transfer> transferList = new ArrayList<>();
+			transfers.ifPresent(transfer -> transferList.add(transfer));
+			return new ResponseEntity<List<Transfer>>(transferList, HttpStatus.OK);
+		} else {
+			throw new AccountNotFoundException();
 		}
 	}
 
@@ -78,27 +123,6 @@ public class TransferService implements ITransferService {
 		} else {
 			throw new AccountNotFoundException();
 		}
-	}
-
-	@Override
-	public List<Transfer> getTransfers() {
-		// TODO Auto-generated method stub
-		List<Transfer> getTransfer = transferRepository.findAll();
-		return getTransfer;
-	}
-
-	@Override
-	public List<Transfer> getBySenderId(Long id) {
-		Optional<Transfer> transfers = transferRepository.findById(id);
-		transfers.ifPresent(transfer -> System.out.println(transfer.getAmount()));
-
-		return null;
-	}
-
-	@Override
-	public List<Transfer> getByReceiverId(Long id) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

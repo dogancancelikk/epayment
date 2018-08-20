@@ -12,10 +12,10 @@ public interface ITransferService {
 	
 	ResponseEntity<TransferAccountDTO> createTransfer(TransferDTO transferDTO);
 	
-	public List<Transfer> getTransfers();
+	public ResponseEntity<List<Transfer>> getAllTransfers();
 	
-	public List<Transfer> getBySenderId(Long id);
+	public ResponseEntity<List<Transfer>> getBySenderId(Long id);
 	
-	public List<Transfer> getByReceiverId(Long id);
+	public ResponseEntity<List<Transfer>> getByReceiverId(Long id);
 
 }

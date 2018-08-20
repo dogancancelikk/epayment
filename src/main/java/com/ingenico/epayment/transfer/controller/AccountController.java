@@ -19,35 +19,36 @@ import com.ingenico.epayment.transfer.service.IAccountService;
 @RestController
 @RequestMapping("account")
 public class AccountController {
-	
+
 	@Autowired
 	IAccountService accountService;
-	
-		@GetMapping("/getbyid/{id}")
-		public ResponseEntity<Account> getAccountById(@PathVariable("id") Long id){
-			
-			return accountService.getOneAccountInformation(id);
-			
-		}
-	
-		@PostMapping("/create")
-	    public ResponseEntity<Account> createAccount(@RequestBody(required = true) Account account){
-			return accountService.createAccount(account);
-	    }
-		@PostMapping("/create/multiple")
-		 public ResponseEntity<List<Account>> createMultipleAccount(@RequestBody(required = true) Collection<Account> accounts){
-				return accountService.createMultipleAccounts(accounts);
-		    }
-		
-		@GetMapping("/getbyname/{name}")
-		public ResponseEntity<Account> getAccountByName(@PathVariable("name") String name){
-			return accountService.getAccountInformationByName(name);
-		}
-		
-		@GetMapping("/get/all")
-		public ResponseEntity<List<AccountDTO>> getAllAccounts() throws Throwable{
-			return accountService.getAllAccountsResponse();
-		}
-		
-		
+
+	@PostMapping("/create")
+	public ResponseEntity<Account> createAccount(@RequestBody(required = true) Account account) {
+		return accountService.createAccount(account);
+	}
+
+	@PostMapping("/create/multiple")
+	public ResponseEntity<List<Account>> createMultipleAccounts(
+			@RequestBody(required = true) Collection<Account> accounts) {
+		return accountService.createMultipleAccounts(accounts);
+	}
+
+	@GetMapping("/getbyname/{name}")
+	public ResponseEntity<Account> getAccountByName(@PathVariable("name") String name) {
+		return accountService.getAccountInformationByName(name);
+	}
+
+	@GetMapping("/get/all")
+	public ResponseEntity<List<Account>> getAllAccounts() throws Throwable {
+		return accountService.getAllAccountsResponse();
+	}
+
+	@GetMapping("/getbyid/{id}")
+	public ResponseEntity<Account> getAccountById(@PathVariable("id") Long id) {
+
+		return accountService.getOneAccountInformation(id);
+
+	}
+
 }

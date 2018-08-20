@@ -18,7 +18,7 @@ public interface IAccountService {
 
 	ResponseEntity<Account> getAccountInformationByName(String name);
 	
-	ResponseEntity<List<AccountDTO>> getAllAccountsResponse();
+	ResponseEntity<List<Account>> getAllAccountsResponse();
 	
 	ResponseEntity<List<Account>> createMultipleAccounts(Collection<Account> accounts);
 }

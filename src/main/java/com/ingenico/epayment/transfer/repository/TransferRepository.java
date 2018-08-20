@@ -13,4 +13,8 @@ public interface TransferRepository extends JpaRepository<Transfer, Long> {
 	
 	Optional<Transfer> findById(Long id);
 	
+	Optional<Transfer> findBySenderAccountId(Long id);
+	
+	Optional<Transfer> findByReceiverAccountId(Long id);
+	
 }

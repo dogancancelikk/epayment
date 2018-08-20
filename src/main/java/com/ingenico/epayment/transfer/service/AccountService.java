@@ -53,14 +53,14 @@ public class AccountService implements IAccountService {
 	}
 
 	@Override
-	public ResponseEntity<List<AccountDTO>> getAllAccountsResponse() {
+	public ResponseEntity<List<Account>> getAllAccountsResponse() {
 		List<Account> allAccounts = accountRepository.findAll();
-		List<AccountDTO> allAccountDTO = new ArrayList<>();
-		for (Account account : allAccounts) {
-			AccountDTO newAccountDTO = new AccountDTO(account.getName(), account.getBalance());
-			allAccountDTO.add(newAccountDTO);
+		if(!allAccounts.isEmpty()){
+			return new ResponseEntity<List<Account>>(allAccounts, HttpStatus.OK);	
+		}else{
+			return new ResponseEntity<List<Account>>(allAccounts, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<List<AccountDTO>>(allAccountDTO, HttpStatus.OK);
+		
 	}
 
 	@Override
