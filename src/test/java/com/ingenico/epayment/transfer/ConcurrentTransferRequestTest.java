@@ -39,8 +39,8 @@ public class ConcurrentTransferRequestTest {
 
 	@Test(expected = ObjectOptimisticLockingFailureException.class)
 	public void testConcurrencyWriting() {
-		Account account1 = accountRepository.findByName("Account1").get();
-		Account account2 = accountRepository.findByName("Account1").get();
+		Account account1 = accountRepository.findById((long)1).get();
+		Account account2 = accountRepository.findById((long)1).get();
 
 		account1.setBalance(new BigDecimal("1700"));
 		account2.setBalance(new BigDecimal("1550"));

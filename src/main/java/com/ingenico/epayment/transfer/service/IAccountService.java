@@ -16,7 +16,7 @@ public interface IAccountService {
 	
 	ResponseEntity<Account> getOneAccountInformationById(Long id);
 
-	ResponseEntity<Account> getAccountInformationByName(String name);
+//	ResponseEntity<Account> getAccountInformationByName(String name);
 	
 	ResponseEntity<List<Account>> getAllAccountsResponse();
 	

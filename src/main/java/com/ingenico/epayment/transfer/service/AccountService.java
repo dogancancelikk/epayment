@@ -88,12 +88,12 @@ public class AccountService implements IAccountService {
 	}
 	
 	
-	@Override
-	public ResponseEntity<Account> getAccountInformationByName(String name) {
-		Optional<Account> account = findAccountByNameIfExists(name);
-
-		return new ResponseEntity<Account>(account.get(), HttpStatus.OK);
-	}
+//	@Override
+//	public ResponseEntity<Account> getAccountInformationByName(String name) {
+//		Optional<Account> account = findAccountByNameIfExists(name);
+//
+//		return new ResponseEntity<Account>(account.get(), HttpStatus.OK);
+//	}
 
 	/**
 	 * This method gets information of account by using account id. If account doesn't exist, it throws AccountNotFoundException. 
@@ -112,15 +112,15 @@ public class AccountService implements IAccountService {
 	/**
 	 * This method gets information of account by using account name. If account doesn't exist, it throws AccountNotFoundException.
 	 */
-	private Optional<Account> findAccountByNameIfExists(String name) {
-		Optional<Account> existingAccount = accountRepository.findByName(name);
-		logger.info("The account with account name "+name+" is fetched from the database.");
-		if (existingAccount.isPresent()) {
-			return existingAccount;
-		} else {
-			logger.warn("There is no account with account name "+name);
-			throw new AccountNotFoundException();
-		}
-	}
+//	private Optional<Account> findAccountByNameIfExists(String name) {
+//		Optional<Account> existingAccount = accountRepository.findByName(name);
+//		logger.info("The account with account name "+name+" is fetched from the database.");
+//		if (existingAccount.isPresent()) {
+//			return existingAccount;
+//		} else {
+//			logger.warn("There is no account with account name "+name);
+//			throw new AccountNotFoundException();
+//		}
+//	}
 
 }
