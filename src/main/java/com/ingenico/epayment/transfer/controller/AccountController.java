@@ -34,10 +34,10 @@ public class AccountController {
 		return accountService.createMultipleAccounts(accounts);
 	}
 
-	@GetMapping("/getbyname/{name}")
-	public ResponseEntity<Account> getAccountByName(@PathVariable("name") String name) {
-		return accountService.getAccountInformationByName(name);
-	}
+//	@GetMapping("/getbyname/{name}")
+//	public ResponseEntity<Account> getAccountByName(@PathVariable("name") String name) {
+//		return accountService.getAccountInformationByName(name);
+//	}
 
 	@GetMapping("/get/all")
 	public ResponseEntity<List<Account>> getAllAccounts() throws Throwable {

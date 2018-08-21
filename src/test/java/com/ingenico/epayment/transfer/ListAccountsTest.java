@@ -71,21 +71,21 @@ public class ListAccountsTest {
     	
     }
     
-    @Test
-    public void getSingleAccountByName(){
-    	String resourceUrl = "/account/getbyname/"+account.getName();
-    	ResponseEntity<Account> responseEntity = restTemplate.exchange(resourceUrl, HttpMethod.GET,
-    			testHelper.getRequestHeaders(),Account.class);
-    	
-    	assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-    	assertEquals(MediaType.APPLICATION_JSON_UTF8, responseEntity.getHeaders().getContentType());
-    	
-    	Account parsedAccount = responseEntity.getBody();
-    	assertEquals(account.getId(), parsedAccount.getId());
-    	assertEquals(account.getName(), parsedAccount.getName());
-    	assertTrue(account.getBalance().compareTo(parsedAccount.getBalance())==0);
-    	
-    }
+//    @Test
+//    public void getSingleAccountByName(){
+//    	String resourceUrl = "/account/getbyname/"+account.getName();
+//    	ResponseEntity<Account> responseEntity = restTemplate.exchange(resourceUrl, HttpMethod.GET,
+//    			testHelper.getRequestHeaders(),Account.class);
+//    	
+//    	assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+//    	assertEquals(MediaType.APPLICATION_JSON_UTF8, responseEntity.getHeaders().getContentType());
+//    	
+//    	Account parsedAccount = responseEntity.getBody();
+//    	assertEquals(account.getId(), parsedAccount.getId());
+//    	assertEquals(account.getName(), parsedAccount.getName());
+//    	assertTrue(account.getBalance().compareTo(parsedAccount.getBalance())==0);
+//    	
+//    }
     
     @Test
     public void accountNotFound() {

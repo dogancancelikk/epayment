@@ -47,7 +47,7 @@ public class TransferService implements ITransferService {
 	 */
 	@Override
 	public ResponseEntity<TransferAccountDTO> createTransfer(TransferDTO transferRequest) {
-		logger.info("Transfer is starting...");
+		logger.debug("Transfer is starting...");
 		if (validateTransferRequest(transferRequest)) {
 			Optional<Account> senderAccount = accountRepository.findById(transferRequest.getSenderID());
 			Optional<Account> receiverAccount = accountRepository.findById(transferRequest.getReceiverID());
@@ -64,7 +64,7 @@ public class TransferService implements ITransferService {
 				receiverAccount.get().setBalance(receiverAccountNewBalance);
 					try {
 						accountRepository.save(senderAccount.get());
-						logger.info(senderAccount.get().getName()+" account is updated. New balance is " + senderAccount.get().getBalance());
+						logger.debug(senderAccount.get().getName()+" account is updated. New balance is " + senderAccount.get().getBalance());
 					} catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException) {
 						logger.error("Inconsistent data transfer request. The transfer request is cancelled. "+optimisticLockingFailureException.getMessage());
 						throw optimisticLockingFailureException;
@@ -72,10 +72,9 @@ public class TransferService implements ITransferService {
 					
 					try {
 						accountRepository.save(receiverAccount.get());
-						logger.info(receiverAccount.get().getName()+" account is updated. New balance is " + receiverAccount.get().getBalance());
+						logger.debug(receiverAccount.get().getName()+" account is updated. New balance is " + receiverAccount.get().getBalance());
 					} catch (ObjectOptimisticLockingFailureException optimisticLockingFailureException) {
 						logger.error("Inconsistent data transfer request. The transfer request is cancelled." + optimisticLockingFailureException.getMessage());
-						accountRepository.delete(receiverAccount.get());
 						throw optimisticLockingFailureException;
 					}
 					transferRepository.save(transfer);
@@ -87,7 +86,7 @@ public class TransferService implements ITransferService {
 					throw exception;
 				}
 		} 
-		return null;
+		return new ResponseEntity<TransferAccountDTO>(new TransferAccountDTO(),HttpStatus.OK);
 	}
 	
 	/**
@@ -95,12 +94,12 @@ public class TransferService implements ITransferService {
 	 */
 	@Override
 	public ResponseEntity<List<Transfer>> getAllTransfers() {
-		logger.info("All transfer informations are being fetched.");
+		logger.debug("All transfer informations are being fetched.");
 		List<Transfer> transfers = transferRepository.findAll();
 		if (!transfers.isEmpty()) {
 			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.OK);
 		} else {
-			logger.info("There is no transfer information");
+			logger.debug("There is no transfer information");
 			return new ResponseEntity<List<Transfer>>(transfers, HttpStatus.NOT_FOUND);
 		}
 	}
@@ -110,7 +109,7 @@ public class TransferService implements ITransferService {
 	 */
 	@Override
 	public ResponseEntity<List<Transfer>> getBySenderId(Long id) {
-		logger.info("Transfer information is being fetched according to sender id.");
+		logger.debug("Transfer information is being fetched according to sender id.");
 		Account account = accountRepository.findById(id).get();
 		if (account != null) {
 			List<Transfer> transfers = transferRepository.findBySenderAccountId(id);
@@ -126,7 +125,7 @@ public class TransferService implements ITransferService {
 	 */
 	@Override
 	public ResponseEntity<List<Transfer>> getByReceiverId(Long id) {
-		logger.info("Transfer information is being fetched according to receiver id.");
+		logger.debug("Transfer information is being fetched according to receiver id.");
 		Account account = accountRepository.findById(id).get();
 		if (account != null) {
 			List<Transfer> transfers = transferRepository.findByReceiverAccountId(id);

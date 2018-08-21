@@ -135,7 +135,7 @@ public class TransferTest {
 		ResponseEntity<Transfer> responseEntity = testRestTemplate.exchange(resourceUrl, HttpMethod.POST,
 				testHelper.getPostRequestHeaders(jsonPostBody.toString()), Transfer.class);
 		
-		assertEquals(404, responseEntity.getStatusCodeValue());
+		assertEquals(412, responseEntity.getStatusCodeValue());
 
 	}
 	

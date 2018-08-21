@@ -49,15 +49,15 @@ public class AccountService implements IAccountService {
 	 */
 	@Override
 	public ResponseEntity<List<Account>> createMultipleAccounts(Collection<Account> accounts) {
-		logger.info("Accounts are creating...");
+		logger.debug("Accounts are creating...");
 		List<Account> accountList = new ArrayList<>();
 		for(Account account :accounts){
 			if (account.getName() != null && account.getName().length()>0) {
 				Account newAccount = accountRepository.save(account);
-				logger.info("Account is created succesfully. Account name is "+newAccount.getName()+" and it has "+newAccount.getBalance()+"£ balance");
+				logger.debug("Account is created succesfully. Account name is "+newAccount.getName()+" and it has "+newAccount.getBalance()+"£ balance");
 				accountList.add(newAccount);
 			}else{
-				logger.warn("Missing name information on request.");
+				logger.error("Missing name information on request.");
 			}
 		}
 		return new ResponseEntity<List<Account>>(accountList, HttpStatus.CREATED);
@@ -68,12 +68,12 @@ public class AccountService implements IAccountService {
 	 */
 	@Override
 	public ResponseEntity<List<Account>> getAllAccountsResponse() {
-		logger.info("Fetching all accounts from database.");
+		logger.debug("Fetching all accounts from database.");
 		List<Account> allAccounts = accountRepository.findAll();
 		if(!allAccounts.isEmpty()){
 			return new ResponseEntity<List<Account>>(allAccounts, HttpStatus.OK);	
 		}else{
-			logger.info("There is no account.");
+			logger.debug("There is no account.");
 			return new ResponseEntity<List<Account>>(allAccounts, HttpStatus.NOT_FOUND);
 		}
 		
@@ -105,7 +105,7 @@ public class AccountService implements IAccountService {
 		if (existingAccount.isPresent()) {
 			return existingAccount;
 		} else {
-			logger.warn("There is no account with account id"+id);
+			logger.error("There is no account with account id"+id);
 			throw new AccountNotFoundException();
 		}
 	}

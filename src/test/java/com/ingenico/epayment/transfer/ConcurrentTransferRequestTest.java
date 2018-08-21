@@ -28,28 +28,28 @@ public class ConcurrentTransferRequestTest {
 
 	@Autowired
 	TestRestTemplate testRestTemplate;
-
+	
+	private Account account;
+	
 	@Before
 	public void setUp() throws Exception {
-		accountRepository.save(new Account("Accont1", new BigDecimal("1500")));
-		accountRepository.save(new Account("Account2", new BigDecimal("1200")));
-		accountRepository.save(new Account("Account3", new BigDecimal("1300")));
-		accountRepository.save(new Account("Account4", new BigDecimal("1400")));
+		account = accountRepository.save(new Account("Accont1", new BigDecimal("1500")));
+		
 	}
 
 	@Test(expected = ObjectOptimisticLockingFailureException.class)
 	public void testConcurrencyWriting() {
-		Account account1 = accountRepository.findById((long)1).get();
-		Account account2 = accountRepository.findById((long)1).get();
+		Account accountOfTransferRequest1 = accountRepository.findById(account.getId()).get();
+		Account accountOfTransferRequest2 = accountRepository.findById(account.getId()).get();
 
-		account1.setBalance(new BigDecimal("1700"));
-		account2.setBalance(new BigDecimal("1550"));
+		accountOfTransferRequest1.setBalance(new BigDecimal("1700"));
+		accountOfTransferRequest2.setBalance(new BigDecimal("1550"));
 
-		assertEquals(0, account1.getVersion().intValue());
-		assertEquals(0, account2.getVersion().intValue());
+		assertEquals(0, accountOfTransferRequest1.getVersion().intValue());
+		assertEquals(0, accountOfTransferRequest2.getVersion().intValue());
 
-		accountRepository.save(account1);
-		accountRepository.save(account2);
+		accountRepository.save(accountOfTransferRequest1);
+		accountRepository.save(accountOfTransferRequest2);
 	}
 
 }

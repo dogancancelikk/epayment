@@ -25,6 +25,11 @@ public class Account {
 		this.name = name;
 		this.balance = balance;
 	}
+	public Account(Long id,String name, BigDecimal balance) {
+		this.id = id;
+		this.name = name;
+		this.balance = balance;
+	}
 
 	public Account() {
 
